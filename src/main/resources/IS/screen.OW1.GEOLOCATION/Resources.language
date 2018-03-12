@@ -1,0 +1,12 @@
+language.source=de
+geolocation_ow1$0=Infosystem Geolocation
+geolocation_ow1$1=Seite 1
+geolocation_ow1$2=Seite 1
+geolocation_ow1_fhead_customersel=Search word
+geolocation_ow1_fhead_zipcodesel=ZIP code
+geolocation_ow1_ftable_customer=Customer
+geolocation_ow1_ftable_latitude=Latitude
+geolocation_ow1_ftable_longitude=Longitude
+geolocation_ow1_ftable_state=State
+geolocation_ow1_ftable_town=Town
+geolocation_ow1_ftable_zipcode=ZIP code

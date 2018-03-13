@@ -1,11 +1,15 @@
 package de.abas.app.g30l0;
 
 import de.abas.erp.db.DbContext;
-import de.abas.erp.db.EditorAction;
-import de.abas.erp.db.exception.CommandException;
+import de.abas.erp.db.Deletable;
+import de.abas.erp.db.Query;
+import de.abas.erp.db.SelectableObject;
 import de.abas.erp.db.infosystem.custom.ow1.GeoLocation;
 import de.abas.erp.db.schema.customer.Customer;
 import de.abas.erp.db.schema.customer.CustomerEditor;
+import de.abas.erp.db.schema.regions.RegionCountryEconomicArea;
+import de.abas.erp.db.schema.vendor.Vendor;
+import de.abas.erp.db.schema.vendor.VendorEditor;
 import de.abas.erp.db.selection.Conditions;
 import de.abas.erp.db.selection.SelectionBuilder;
 import de.abas.erp.db.util.ContextHelper;
@@ -18,7 +22,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +30,7 @@ import static org.junit.Assert.assertThat;
 public class ClientSideInfosystemTest {
 
 	private static final String CUSTOMER_SWD = "FISCHERFORESDK";
+	private static final String VENDOR_SWD = "HELLSTROEMFORESDK";
 	private static DbContext ctx;
 	private GeoLocation geoLocation = ctx.openInfosystem(GeoLocation.class);
 
@@ -53,12 +57,28 @@ public class ClientSideInfosystemTest {
 		assertThat(row.getState().getSwd(), is("DEUTSCHLAND"));
 	}
 
+	@Test
+	public void canDisplayVendorInfo() {
+		geoLocation.setCustomersel(VENDOR_SWD);
+		geoLocation.invokeStart();
+		assertThat(geoLocation.table().getRowCount(), is(1));
+		GeoLocation.Row row = geoLocation.table().getRow(1);
+		assertThat(row.getZipcode(), is("111 52"));
+		assertThat(row.getTown(), is("Stockholm"));
+		assertThat(row.getState().getSwd(), is("SCHWEDEN"));
+	}
+
 	@After
 	public void tidyUp() {
 		geoLocation.abort();
 	}
 
 	private static void createTestData() {
+		createTestCustomer();
+		createTestVendor();
+	}
+
+	private static void createTestCustomer() {
 		CustomerEditor customerEditor = ctx.newObject(CustomerEditor.class);
 		customerEditor.setSwd(CUSTOMER_SWD);
 		customerEditor.setAddr("Simone Fischer");
@@ -69,20 +89,30 @@ public class ClientSideInfosystemTest {
 		customerEditor.commit();
 	}
 
-	private static void deleteTestData() {
-		List<Customer> customers = ctx.createQuery(SelectionBuilder.create(Customer.class).add(Conditions.eq(Customer.META.swd, CUSTOMER_SWD)).build()).execute();
-		for (Customer customer : customers) {
-			CustomerEditor customerEditor = customer.createEditor();
-			try {
-				customerEditor.open(EditorAction.DELETE);
-				customerEditor.commit();
-			} catch (CommandException e) {
-				if (customerEditor.active()) {
-					customerEditor.abort();
-				}
-				System.err.println("Error while deleting customer " + customer.getIdno() + ": " + e.getMessage());
-			}
+	private static void createTestVendor() {
+		VendorEditor vendorEditor = ctx.newObject(VendorEditor.class);
+		vendorEditor.setSwd(VENDOR_SWD);
+		vendorEditor.setAddr("Isolde Hellström");
+		vendorEditor.setStreet("Fredsgatan 12");
+		vendorEditor.setZipCode("111 52");
+		vendorEditor.setTown("Stockholm");
+		RegionCountryEconomicArea sweden = ctx.createQuery(SelectionBuilder.create(RegionCountryEconomicArea.class).add(Conditions.eq(RegionCountryEconomicArea.META.swd, "SCHWEDEN")).build()).iterator().next();
+		vendorEditor.setStateOfTaxOffice(sweden);
+		vendorEditor.setDescr(vendorEditor.getAddr() + ", " + vendorEditor.getTown());
+		vendorEditor.commit();
+	}
 
+	private static void deleteTestData() {
+		deleteTestData(Customer.class, CUSTOMER_SWD);
+		deleteTestData(Vendor.class, VENDOR_SWD);
+	}
+
+	private static <T extends SelectableObject & Deletable> void deleteTestData(Class<T> clazz, String swd) {
+		Query<T> query = ctx.createQuery(SelectionBuilder.create(clazz)
+				.add(Conditions.starts("swd", swd))
+				.build());
+		for (T object : query) {
+			object.delete();
 		}
 	}
 

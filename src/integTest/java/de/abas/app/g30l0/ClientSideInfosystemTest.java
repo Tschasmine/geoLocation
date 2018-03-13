@@ -1,6 +1,9 @@
 package de.abas.app.g30l0;
 
-import de.abas.erp.db.*;
+import de.abas.erp.db.DbContext;
+import de.abas.erp.db.Deletable;
+import de.abas.erp.db.Query;
+import de.abas.erp.db.SelectableObject;
 import de.abas.erp.db.infosystem.custom.ow1.GeoLocation;
 import de.abas.erp.db.schema.customer.Customer;
 import de.abas.erp.db.schema.customer.CustomerEditor;
@@ -10,13 +13,20 @@ import de.abas.erp.db.schema.vendor.VendorEditor;
 import de.abas.erp.db.selection.Conditions;
 import de.abas.erp.db.selection.SelectionBuilder;
 import de.abas.erp.db.util.ContextHelper;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
 
 public class ClientSideInfosystemTest {
@@ -58,6 +68,16 @@ public class ClientSideInfosystemTest {
 		assertThat(row.getZipcode(), is("111 52"));
 		assertThat(row.getTown(), is("Stockholm"));
 		assertThat(row.getState().getSwd(), is("SCHWEDEN"));
+	}
+
+	@Test
+	public void canDisplayGeoLocation() {
+		geoLocation.setCustomersel(VENDOR_SWD);
+		geoLocation.invokeStart();
+		assertThat(geoLocation.table().getRowCount(), is(1));
+		GeoLocation.Row row = geoLocation.table().getRow(1);
+		assertThat(row.getLongitude(), closeTo(BigDecimal.valueOf(18.0644393), BigDecimal.valueOf(0.000001)));
+		assertThat(row.getLatitude(), closeTo(BigDecimal.valueOf(59.3286884), BigDecimal.valueOf(0.000001)));
 	}
 
 	@Test

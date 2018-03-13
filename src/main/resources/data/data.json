@@ -1,0 +1,30 @@
+{
+  "roots" : [
+	{
+	  "dbnr" : 88,
+	  "grnr" : 3,
+	  "identifier" : "such",
+	  "headfields" : [ "id", "such", "name",  "aktiv", "kanal", "arb", "laytyp", "kontext", "genlayout", "genlayname", "layname" ],
+	  "tablefields" : [],
+	  "criteria" : "such==ISJASOW1GEOLOCA"
+	}
+  ],
+  "dependents" : [
+	{
+	  "dbnr" : 65,
+	  "grnr" : 1,
+	  "standard" : true,
+	  "identifier" : "such",
+	  "headfields" : [ "id", "such" ],
+	  "tablefields" : []
+	},
+	{
+	  "dbnr" : 88,
+	  "grnr" : 6,
+	  "standard" : true,
+	  "identifier" : "such",
+	  "headfields" : [ "id", "such" ],
+	  "tablefields" : []
+	}
+  ]
+}

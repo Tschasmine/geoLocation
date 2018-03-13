@@ -27,7 +27,7 @@ public class GeoLocationEventHandler {
 	@ButtonEventHandler(field = "start", type = ButtonEventType.AFTER)
 	public void startAfter(DbContext ctx, GeoLocation infosystem) {
 		infosystem.table().clear();
-		List<TradingPartner> tradingPartners = selectBusinessPartners(ctx, infosystem.getCustomersel());
+		List<TradingPartner> tradingPartners = selectBusinessPartners(ctx, infosystem.getCustomersel(), infosystem.getZipcodesel());
 		for (TradingPartner tradingPartner : tradingPartners) {
 			GeoLocation.Row row = infosystem.table().appendRow();
 			row.setCustomer(tradingPartner);
@@ -37,18 +37,24 @@ public class GeoLocationEventHandler {
 		}
 	}
 
-	private List<TradingPartner> selectBusinessPartners(DbContext ctx, String swd) {
+	private List<TradingPartner> selectBusinessPartners(DbContext ctx, String swd, String zipCode) {
 		List<TradingPartner> tradingPartners = new ArrayList<>();
-		tradingPartners.addAll(ctx.createQuery(getSelection(Customer.class, swd)).execute());
-		tradingPartners.addAll(ctx.createQuery(getSelection(CustomerContact.class, swd)).execute());
-		tradingPartners.addAll(ctx.createQuery(getSelection(Vendor.class, swd)).execute());
-		tradingPartners.addAll(ctx.createQuery(getSelection(VendorContact.class, swd)).execute());
+		tradingPartners.addAll(ctx.createQuery(buildSelection(Customer.class, swd, zipCode)).execute());
+		tradingPartners.addAll(ctx.createQuery(buildSelection(CustomerContact.class, swd, zipCode)).execute());
+		tradingPartners.addAll(ctx.createQuery(buildSelection(Vendor.class, swd, zipCode)).execute());
+		tradingPartners.addAll(ctx.createQuery(buildSelection(VendorContact.class, swd, zipCode)).execute());
 		return tradingPartners;
 	}
 
-	private <T extends SelectableObject> Selection<T> getSelection(Class<T> clazz, String swd) {
-		return SelectionBuilder.create(clazz)
-				.add(Conditions.eq("swd", swd)).build();
+	private <T extends SelectableObject> Selection<T> buildSelection(Class<T> clazz, String swd, String zipCode) {
+		SelectionBuilder<T> selectionBuilder = SelectionBuilder.create(clazz);
+		if (!swd.isEmpty()) {
+			selectionBuilder.add(Conditions.eq("swd", swd));
+		}
+		if (!zipCode.isEmpty()) {
+			selectionBuilder.add(Conditions.eq("zipCode", zipCode));
+		}
+		return selectionBuilder.build();
 	}
 
 }

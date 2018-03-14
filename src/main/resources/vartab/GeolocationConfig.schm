@@ -1,0 +1,26 @@
+database master GeolocationConfig {
+	number 25
+	classname GeolocationConfig
+	structure GeolocationConfig {
+		head {
+			field GL100 baseurl {
+				label ""
+				heading ""
+				description "Base URL"
+				screen EDITABLE
+				showPriority A
+				changePriority A
+			}
+			field GL100 apikey {
+				label ""
+				heading ""
+				description "API Key"
+				screen EDITABLE
+				showPriority A
+				changePriority A
+			}
+		}
+		table {
+		}
+	}
+}

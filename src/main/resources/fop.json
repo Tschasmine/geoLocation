@@ -8,7 +8,7 @@
 	"field": "yg30l0calculate",
 	"headOrTable": "K",
 	"isContinue": "[C]",
-	"handler": "java:de.abas.app.g30l0.CustomerEventHandler@GeoLocation"
+	"handler": "java:de.abas.app.g30l0.CustomerEventHandler@geoLocation"
   },
   {
 	"databaseName": "(Customer)",
@@ -19,6 +19,6 @@
 	"field": "yg30l0calculate",
 	"headOrTable": "K",
 	"isContinue": "[C]",
-	"handler": "java:de.abas.app.g30l0.CustomerEventHandler@GeoLocation"
+	"handler": "java:de.abas.app.g30l0.CustomerEventHandler@geoLocation"
   }
 ]

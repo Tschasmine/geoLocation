@@ -1,8 +1,18 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath "de.abas.esdk:gradlePlugin:0.10.15-TEST-SNAPSHOT"
+	}
+}
+
 plugins {
 	id "java"
 	id "maven-publish"
-	id "de.abas.esdk" version "0.10.12"
 }
+
+apply plugin: "de.abas.esdk"
 
 repositories {
 	mavenLocal()
@@ -49,11 +59,6 @@ esdk {
 		user = SSH_USER
 		password = SSH_PASSWORD
 		key = SSH_KEY
-	}
-
-	registry {
-		username = PARTNER_USER
-		password = PARTNER_PASSWORD
 	}
 
 	installType = "SSH"

@@ -2,6 +2,7 @@ plugins {
 	id "java"
 	id "maven-publish"
 	id "de.abas.esdk" version "0.11.2"
+	id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
 apply plugin: "de.abas.esdk"
@@ -54,6 +55,17 @@ esdk {
 	}
 
 	installType = "SSH"
+}
+
+coveralls {
+	jacocoReportPath 'build/reports/jacoco/calculateCodeCoverage/calculateCodeCoverage.xml'
+}
+
+calculateCodeCoverage {
+	reports {
+		xml.enabled true
+	}
+	finalizedBy tasks.coveralls
 }
 
 group = 'de.abas.esdk.app'
